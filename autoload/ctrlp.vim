@@ -451,7 +451,7 @@ endf
 
 fu! s:async_glob_on_stdout(job, data, ...)
 	if type(a:data) ==# type([])
-		call extend(g:ctrlp_allfiles, filter(a:data, 'v:val !=# ""'))
+		let g:ctrlp_allfiles = filter(extend(g:ctrlp_allfiles, a:data), 'v:val !=# ""')
 	else
 		call add(g:ctrlp_allfiles, a:data)
 	endif
@@ -521,6 +521,9 @@ fu! s:UserCmd(lscmd)
 		let g:ctrlp_allfiles = []
 		let s:must_wait = 1
 		let argv = [&shell, &shellcmdflag, printf(lscmd, path)]
+		if has('win32')
+			let argv = join(argv)
+		endif
 		if !has('nvim')
 			let s:job = job_start(argv, {
 						\ 'out_cb': function('s:async_glob_on_stdout'), 
